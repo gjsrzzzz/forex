@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.jalindi.forec.ForecBuilder;
+import com.jalindi.forec.ForecClass;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ForecApplicationTests.class)
@@ -31,7 +32,10 @@ public class ForecApplicationTests {
 	@Test
 	public void compileTest() {
 		try {
-			builder.compile();
+			ForecClass forecClass = builder.compile();
+			forecClass.generateSchema();
+			builder.createObject(forecClass);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

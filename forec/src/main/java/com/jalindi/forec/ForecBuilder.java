@@ -3,8 +3,6 @@ package com.jalindi.forec;
 import java.io.IOException;
 
 import javax.annotation.Resource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
@@ -24,22 +22,12 @@ public class ForecBuilder {
 		answerSet.add("address", "24 Cartsbridge Road");
 	}
 
-	public void compile() {
+	public ForecClass compile() throws ForecException {
 		FieldDefinition[] defintions = this.getClass().getAnnotation(FieldDefinitions.class).value();
 		ForecCompiler compiler = new ForecCompiler("DTest", defintions);
-		Class<?> forecClass = compiler.compile();
+		ForecClass forecClass = compiler.compile();
+		return forecClass;
 
-		JAXBContext jaxbContext;
-		try {
-			jaxbContext = JAXBContext.newInstance(forecClass);
-			SchemaOutputResolver sor = new MySchemaOutputResolver();
-			jaxbContext.generateSchema(sor);
-		} catch (JAXBException e1) {
-			e1.printStackTrace();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public static class MySchemaOutputResolver extends SchemaOutputResolver {
@@ -52,6 +40,13 @@ public class ForecBuilder {
 			return result;
 		}
 
+	}
+
+	public void createObject(ForecClass forecClass) throws ForecException {
+		ForecObject object = forecClass.newInstance();
+		for (Answer answer : answerSet) {
+			object.set(answer.getName(), answer.getValues());
+		}
 	}
 
 }

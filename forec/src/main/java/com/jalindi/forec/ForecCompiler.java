@@ -44,7 +44,7 @@ public class ForecCompiler {
 
 	}
 
-	public Class<?> compile() {
+	public ForecClass compile() {
 		String packageName = "forec.compiled";
 		built = new StringBuilder();
 		built.append("package " + packageName + ";\n");
@@ -57,7 +57,7 @@ public class ForecCompiler {
 		System.out.println(built.toString());
 		Class<?> forecClass = compileClass(built.toString(), packageName, name);
 		System.out.println(forecClass.toString());
-		return forecClass;
+		return new ForecClass(forecClass);
 		// doCompile(built.toString());
 	}
 
@@ -219,25 +219,32 @@ public class ForecCompiler {
 		}
 	}
 
-	private void append(FieldDefinition field) {
-		built.append("\tpublic ");
-		switch (field.dataType()) {
-		case STRING:
-			built.append("String");
-			break;
-		case NUMBER:
-			built.append("double");
-			break;
-		case BOOLEAN:
-			built.append("boolean");
-			break;
-		case INTEGER:
-			built.append("int");
-			break;
-		default:
-			break;
+	private String getReadMethod(FieldDefinition field) {
+		if (field.dataType().isBoolean()) {
+			String method = "is" + field.name().substring(0, 1).toUpperCase() + field.name().substring(1);
+			return method;
+		} else {
+			String method = "get" + field.name().substring(0, 1).toUpperCase() + field.name().substring(1);
+			return method;
 		}
-		built.append(" " + field.name() + ";\n");
+	}
+
+	private String getWriteMethod(FieldDefinition field) {
+		if (field.dataType().isBoolean()) {
+			String method = "setIs" + field.name().substring(0, 1).toUpperCase() + field.name().substring(1);
+			return method;
+		} else {
+			String method = "set" + field.name().substring(0, 1).toUpperCase() + field.name().substring(1);
+			return method;
+		}
+	}
+
+	private void append(FieldDefinition field) {
+		built.append("\tprivate " + field.dataType().getJavaType() + " " + field.name() + ";\n");
+		built.append("\tpublic " + field.dataType().getJavaType() + " " + getReadMethod(field) + "() { return "
+				+ field.name() + ";}\n");
+		built.append("\tpublic void " + getWriteMethod(field) + "(" + field.dataType().getJavaType() + " "
+				+ field.name() + ")" + " { this." + field.name() + "=" + field.name() + ";}\n");
 	}
 
 	class JavaSourceFromString extends SimpleJavaFileObject {
