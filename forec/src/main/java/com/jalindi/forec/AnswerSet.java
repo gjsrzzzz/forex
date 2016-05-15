@@ -17,8 +17,12 @@ public class AnswerSet implements Iterable<Answer> {
 		return answers.toString();
 	}
 
-	public void add(String name, String value) {
-		answers.add(new Answer(name, value));
+	public void add(String name, String... values) {
+		answers.add(new Answer(name, values));
+	}
+
+	public void add(String name, Value... values) {
+		answers.add(new Answer(name, values));
 	}
 
 }

@@ -2,8 +2,15 @@ package com.jalindi.forec;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import com.jalindi.forec.datatype.StringValue;
 
 public class ForecObject {
 	private Object object;
@@ -17,18 +24,22 @@ public class ForecObject {
 		}
 	}
 
-	public void set(String propertyName, String argument) throws ForecException {
+	public void set(String propertyName, List<Value> values) throws ForecException {
 		try {
 			PropertyDescriptor descriptor = new PropertyDescriptor(propertyName, object.getClass());
-			if (descriptor.getPropertyType().equals(double.class)) {
-				descriptor.getWriteMethod().invoke(object, Double.valueOf(argument));
+			String firstValue = values.get(0).getInternalValue();
+			Class<?> propertyType = descriptor.getPropertyType();
+			if (propertyType.equals(double.class)) {
+				descriptor.getWriteMethod().invoke(object, Double.valueOf(firstValue));
+			} else if (propertyType.equals(StringValue.class)) {
+				descriptor.getWriteMethod().invoke(object, new StringValue(values.get(0)));
 			} else {
-				descriptor.getWriteMethod().invoke(object, argument);
+				descriptor.getWriteMethod().invoke(object, firstValue);
 			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| IntrospectionException e) {
 			e.printStackTrace();
-			throw new ForecException("Cannot set property " + propertyName + " args " + argument, e);
+			throw new ForecException("Cannot set property " + propertyName + ", values " + values, e);
 		}
 	}
 
@@ -45,8 +56,20 @@ public class ForecObject {
 		return value;
 	}
 
-	public void set(String name, List<Value> values) throws ForecException {
-		Value value = values.get(0);
-		set(name, value.getInternalValue());
+	public void marshal() throws ForecException {
+		JAXBContext jaxbContext;
+		try {
+			jaxbContext = JAXBContext.newInstance(object.getClass());
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			StringWriter writer = new StringWriter();
+
+			marshaller.marshal(object, writer);
+			String xml = writer.toString();
+			System.out.println(xml);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+			throw new ForecException("Failed to marshall object ", e);
+		}
 	}
 }

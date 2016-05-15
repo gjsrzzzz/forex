@@ -48,7 +48,8 @@ public class ForecCompiler {
 		String packageName = "forec.compiled";
 		built = new StringBuilder();
 		built.append("package " + packageName + ";\n");
-		built.append("\nimport javax.xml.bind.annotation.XmlRootElement;\n");
+		built.append("\nimport javax.xml.bind.annotation.*;\n");
+		built.append("\nimport com.jalindi.forec.datatype.*;\n");
 		built.append("\n@XmlRootElement\npublic class " + name + "{\n");
 		for (FieldDefinition field : fields) {
 			append(field);

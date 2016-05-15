@@ -12,6 +12,20 @@ public class Answer {
 		values.add(new Value(value));
 	}
 
+	public Answer(String name, String[] values) {
+		this.name = name;
+		for (String value : values) {
+			this.values.add(new Value(value));
+		}
+	}
+
+	public Answer(String name, Value[] values) {
+		this.name = name;
+		for (Value value : values) {
+			this.values.add(value);
+		}
+	}
+
 	public String getName() {
 		return name;
 	}

@@ -1,5 +1,6 @@
 package com.jalindi.forec;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.annotation.Resource;
@@ -12,14 +13,16 @@ import com.jalindi.forec.FieldDefinition.DataType;
 @Resource
 @FieldDefinitions({ @FieldDefinition(name = "name", dataType = DataType.STRING),
 		@FieldDefinition(name = "age", dataType = DataType.NUMBER),
-		@FieldDefinition(name = "address", dataType = DataType.STRING), })
+		@FieldDefinition(name = "address", dataType = DataType.STRING),
+		@FieldDefinition(name = "citizenship", dataType = DataType.STRING) })
 public class ForecBuilder {
 	private AnswerSet answerSet = new AnswerSet();
 
 	public ForecBuilder() {
-		answerSet.add("name", "graham");
+		answerSet.add("name", Value.toValue("234", "graham"));
 		answerSet.add("age", "47");
 		answerSet.add("address", "24 Cartsbridge Road");
+		answerSet.add("citizenship", "UK", "US", "FR");
 	}
 
 	public ForecClass compile() throws ForecException {
@@ -31,22 +34,27 @@ public class ForecBuilder {
 	}
 
 	public static class MySchemaOutputResolver extends SchemaOutputResolver {
+		private ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 		@Override
 		public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
 			// File file = new File(suggestedFileName);
-			StreamResult result = new StreamResult(System.out);
+			StreamResult result = new StreamResult(outputStream);
 			result.setSystemId(suggestedFileName);
 			return result;
 		}
 
+		public void print() {
+			System.out.println(outputStream.toString());
+		}
 	}
 
-	public void createObject(ForecClass forecClass) throws ForecException {
+	public ForecObject createObject(ForecClass forecClass) throws ForecException {
 		ForecObject object = forecClass.newInstance();
 		for (Answer answer : answerSet) {
 			object.set(answer.getName(), answer.getValues());
 		}
+		return object;
 	}
 
 }

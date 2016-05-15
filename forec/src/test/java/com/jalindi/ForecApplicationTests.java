@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.jalindi.forec.ForecBuilder;
 import com.jalindi.forec.ForecClass;
+import com.jalindi.forec.ForecObject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ForecApplicationTests.class)
@@ -34,7 +35,8 @@ public class ForecApplicationTests {
 		try {
 			ForecClass forecClass = builder.compile();
 			forecClass.generateSchema();
-			builder.createObject(forecClass);
+			ForecObject object = builder.createObject(forecClass);
+			object.marshal();
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,20 +1,27 @@
-package com.jalindi.forec;
+package com.jalindi.forec.datatype;
 
-public class Value {
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+
+import com.jalindi.forec.Value;
+
+@XmlType
+public class StringValue {
 	private String internalValue;
 	private String displayValue;
 
-	public Value(String value) {
+	public StringValue(String value) {
 		this.internalValue = value;
 		this.displayValue = value;
 	}
 
-	public Value(String internalValue, String displayValue) {
-		super();
-		this.internalValue = internalValue;
-		this.displayValue = displayValue;
+	public StringValue(Value value) {
+		this.internalValue = value.getInternalValue();
+		this.displayValue = value.getDisplayValue();
 	}
 
+	@XmlAttribute(name = "internal")
 	public String getInternalValue() {
 		return internalValue;
 	}
@@ -23,6 +30,7 @@ public class Value {
 		this.internalValue = internalValue;
 	}
 
+	@XmlValue
 	public String getDisplayValue() {
 		return displayValue;
 	}
@@ -36,9 +44,4 @@ public class Value {
 		return internalValue
 				+ (internalValue != null && !internalValue.equals(displayValue) ? " (" + displayValue + ")" : "");
 	}
-
-	public static Value toValue(String internalValue, String displayValue) {
-		return new Value(internalValue, displayValue);
-	}
-
 }
