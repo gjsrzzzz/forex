@@ -25,5 +25,7 @@ public @interface FieldDefinition {
 
 	String name();
 
+	boolean isList() default false;
+
 	DataType dataType();
 }

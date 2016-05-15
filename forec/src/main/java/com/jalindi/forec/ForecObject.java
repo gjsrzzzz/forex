@@ -10,14 +10,17 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import com.jalindi.forec.FieldDefinition.DataType;
 import com.jalindi.forec.datatype.StringValue;
 
 public class ForecObject {
+	private ForecClass clazz;
 	private Object object;
 
-	public ForecObject(Class<?> clazz) throws ForecException {
+	public ForecObject(ForecClass forecClass) throws ForecException {
 		try {
-			object = clazz.newInstance();
+			clazz = forecClass;
+			object = forecClass.getClazz().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 			throw new ForecException(e);
@@ -25,10 +28,22 @@ public class ForecObject {
 	}
 
 	public void set(String propertyName, List<Value> values) throws ForecException {
+		String type = "";
 		try {
+			FieldDefinition definition = clazz.getDefinition(propertyName);
 			PropertyDescriptor descriptor = new PropertyDescriptor(propertyName, object.getClass());
-			String firstValue = values.get(0).getInternalValue();
 			Class<?> propertyType = descriptor.getPropertyType();
+			DataType dataType = definition.dataType();
+			type = propertyType.getName();
+			if (propertyType.equals(List.class)) {
+				@SuppressWarnings("unchecked")
+				List<StringValue> list = (List<StringValue>) get(propertyName);
+				for (Value value : values) {
+					list.add(new StringValue(value));
+				}
+				return;
+			}
+			String firstValue = values.get(0).getInternalValue();
 			if (propertyType.equals(double.class)) {
 				descriptor.getWriteMethod().invoke(object, Double.valueOf(firstValue));
 			} else if (propertyType.equals(StringValue.class)) {
@@ -39,7 +54,7 @@ public class ForecObject {
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| IntrospectionException e) {
 			e.printStackTrace();
-			throw new ForecException("Cannot set property " + propertyName + ", values " + values, e);
+			throw new ForecException("Cannot set property " + propertyName + " (" + type + "), values " + values, e);
 		}
 	}
 

@@ -14,7 +14,7 @@ import com.jalindi.forec.FieldDefinition.DataType;
 @FieldDefinitions({ @FieldDefinition(name = "name", dataType = DataType.STRING),
 		@FieldDefinition(name = "age", dataType = DataType.NUMBER),
 		@FieldDefinition(name = "address", dataType = DataType.STRING),
-		@FieldDefinition(name = "citizenship", dataType = DataType.STRING) })
+		@FieldDefinition(name = "citizenship", dataType = DataType.STRING, isList = true) })
 public class ForecBuilder {
 	private AnswerSet answerSet = new AnswerSet();
 

@@ -48,18 +48,25 @@ public class ForecCompiler {
 		String packageName = "forec.compiled";
 		built = new StringBuilder();
 		built.append("package " + packageName + ";\n");
-		built.append("\nimport javax.xml.bind.annotation.*;\n");
-		built.append("\nimport com.jalindi.forec.datatype.*;\n");
+		addImport("javax.xml.bind.annotation");
+		addImport("java.util");
+		addImport("com.jalindi.forec.datatype");
 		built.append("\n@XmlRootElement\npublic class " + name + "{\n");
+		Map<String, FieldDefinition> defintions = new HashMap<>();
 		for (FieldDefinition field : fields) {
+			defintions.put(field.name(), field);
 			append(field);
 		}
 		built.append("}");
 		System.out.println(built.toString());
 		Class<?> forecClass = compileClass(built.toString(), packageName, name);
 		System.out.println(forecClass.toString());
-		return new ForecClass(forecClass);
+		return new ForecClass(forecClass, defintions);
 		// doCompile(built.toString());
+	}
+
+	private void addImport(String packageName) {
+		built.append("\nimport " + packageName + ".*;\n");
 	}
 
 	private static Class<?> compileClass(String code, String packageName, String className) {
@@ -241,11 +248,19 @@ public class ForecCompiler {
 	}
 
 	private void append(FieldDefinition field) {
-		built.append("\tprivate " + field.dataType().getJavaType() + " " + field.name() + ";\n");
-		built.append("\tpublic " + field.dataType().getJavaType() + " " + getReadMethod(field) + "() { return "
-				+ field.name() + ";}\n");
-		built.append("\tpublic void " + getWriteMethod(field) + "(" + field.dataType().getJavaType() + " "
-				+ field.name() + ")" + " { this." + field.name() + "=" + field.name() + ";}\n");
+		String javaType = field.dataType().getJavaType();
+		if (field.isList()) {
+			String listType = "List<" + javaType + ">";
+			built.append("\tprivate " + listType + " " + field.name() + "=new Array" + listType + "();\n");
+			built.append("\tpublic " + listType + " " + getReadMethod(field) + "() { return " + field.name() + ";}\n");
+			built.append("\tpublic void " + getWriteMethod(field) + "(" + listType + " " + field.name() + ")"
+					+ " { this." + field.name() + "=" + field.name() + ";}\n");
+		} else {
+			built.append("\tprivate " + javaType + " " + field.name() + ";\n");
+			built.append("\tpublic " + javaType + " " + getReadMethod(field) + "() { return " + field.name() + ";}\n");
+			built.append("\tpublic void " + getWriteMethod(field) + "(" + javaType + " " + field.name() + ")"
+					+ " { this." + field.name() + "=" + field.name() + ";}\n");
+		}
 	}
 
 	class JavaSourceFromString extends SimpleJavaFileObject {
