@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import com.jalindi.forec.FieldDefinition.DataType;
+import com.jalindi.forec.datatype.NumericValue;
 import com.jalindi.forec.datatype.StringValue;
 
 public class ForecObject {
@@ -36,20 +37,27 @@ public class ForecObject {
 			DataType dataType = definition.dataType();
 			type = propertyType.getName();
 			if (propertyType.equals(List.class)) {
-				@SuppressWarnings("unchecked")
-				List<StringValue> list = (List<StringValue>) get(propertyName);
-				for (Value value : values) {
-					list.add(new StringValue(value));
+
+				if (dataType.isNumeric()) {
+					@SuppressWarnings("unchecked")
+					List<NumericValue> list = (List<NumericValue>) get(propertyName);
+					for (Value value : values) {
+						list.add(new NumericValue(propertyName, value, RepeatGenerator.sequence(list.size() + 1)));
+					}
+				} else {
+					@SuppressWarnings("unchecked")
+					List<StringValue> list = (List<StringValue>) get(propertyName);
+					for (Value value : values) {
+						list.add(new StringValue(propertyName, value, RepeatGenerator.sequence(list.size() + 1)));
+					}
 				}
 				return;
 			}
-			String firstValue = values.get(0).getInternalValue();
-			if (propertyType.equals(double.class)) {
-				descriptor.getWriteMethod().invoke(object, Double.valueOf(firstValue));
-			} else if (propertyType.equals(StringValue.class)) {
-				descriptor.getWriteMethod().invoke(object, new StringValue(values.get(0)));
+			Value firstValue = values.get(0);
+			if (dataType.isNumeric()) {
+				descriptor.getWriteMethod().invoke(object, new NumericValue(propertyName, firstValue));
 			} else {
-				descriptor.getWriteMethod().invoke(object, firstValue);
+				descriptor.getWriteMethod().invoke(object, new StringValue(propertyName, firstValue));
 			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| IntrospectionException e) {

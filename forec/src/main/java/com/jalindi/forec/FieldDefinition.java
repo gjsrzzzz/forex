@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldDefinition {
 	enum DataType {
-		STRING("StringValue"), NUMBER("double"), INTEGER("int"), BOOLEAN("bool");
+		STRING("StringValue"), NUMBER("NumericValue"), INTEGER("IntegerValue"), BOOLEAN("BooleanValue");
 		private String javaType;
 
 		private DataType(String javaType) {
@@ -19,6 +19,10 @@ public @interface FieldDefinition {
 
 		public boolean isBoolean() {
 			return this == DataType.BOOLEAN;
+		}
+
+		public boolean isNumeric() {
+			return this == DataType.NUMBER;
 		}
 
 	};
