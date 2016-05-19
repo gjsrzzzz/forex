@@ -25,9 +25,16 @@ public @interface FieldDefinition {
 			return this == DataType.NUMBER;
 		}
 
+		public boolean isInteger() {
+			return this == DataType.INTEGER;
+		}
 	};
 
 	String name();
+
+	String container() default "General";
+
+	String topic() default "General";
 
 	boolean isList() default false;
 

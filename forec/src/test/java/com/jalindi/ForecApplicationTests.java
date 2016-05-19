@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.jalindi.forec.ForecBuilder;
 import com.jalindi.forec.ForecClass;
 import com.jalindi.forec.ForecObject;
+import com.jalindi.forec.docgen.DocGenerate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = ForecApplicationTests.class)
@@ -20,6 +21,8 @@ import com.jalindi.forec.ForecObject;
 public class ForecApplicationTests {
 	@Autowired
 	ForecBuilder builder;
+	@Autowired
+	DocGenerate generator;
 
 	@Bean
 	public ForecBuilder forecBuilder() {
@@ -38,6 +41,16 @@ public class ForecApplicationTests {
 			ForecObject object = builder.createObject(forecClass);
 			object.marshal();
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void generateTest() {
+		try {
+			String html = generator.generate("testDoc.docx");
+			System.out.println(html);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

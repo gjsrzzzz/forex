@@ -27,5 +27,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/graham/git/aspose-words-16.4.0-java/lib/aspose-words-16.4.0-jdk16.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

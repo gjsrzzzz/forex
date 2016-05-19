@@ -5,34 +5,36 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.jalindi.forec.FieldDefinition;
+
 @XmlType
 public abstract class GenericValue<T> {
-	private String name;
+	private FieldDefinition definition;
 	private T internalValue;
 	private String displayValue;
 	private Repeat repeat;
 
-	public GenericValue(String name, T value) {
-		this.name = name;
+	public GenericValue(FieldDefinition definition, T value) {
+		this.definition = definition;
 		this.internalValue = value;
 		this.displayValue = value.toString();
 	}
 
-	public GenericValue(String name, T internalValue, String displayValue) {
-		this.name = name;
+	public GenericValue(FieldDefinition definition, T internalValue, String displayValue) {
+		this.definition = definition;
 		this.internalValue = internalValue;
 		this.displayValue = displayValue;
 	}
 
-	public GenericValue(String name, T value, Repeat repeat) {
-		this.name = name;
+	public GenericValue(FieldDefinition definition, T value, Repeat repeat) {
+		this.definition = definition;
 		this.internalValue = value;
 		this.displayValue = value.toString();
 		this.repeat = repeat;
 	}
 
-	public GenericValue(String name, T internalValue, String displayValue, Repeat repeat) {
-		this.name = name;
+	public GenericValue(FieldDefinition definition, T internalValue, String displayValue, Repeat repeat) {
+		this.definition = definition;
 		this.internalValue = internalValue;
 		this.displayValue = displayValue;
 		this.repeat = repeat;
@@ -43,9 +45,20 @@ public abstract class GenericValue<T> {
 		return internalValue;
 	}
 
+	@XmlTransient
+	public String getName() {
+		return definition.name();
+	}
+
+	@XmlTransient
+	public String getContainer() {
+		return definition.container();
+	}
+
 	@XmlAttribute
 	public String getKey() {
-		return name + (repeat == null ? "" : ":" + repeat.getRepeatId());
+		return (getContainer() == null ? "" : getContainer() + ".") + getName()
+				+ (repeat == null ? "" : ":" + repeat.getRepeatId());
 	}
 
 	@XmlAttribute

@@ -11,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 @Configuration
 @EnableAutoConfiguration
+@ComponentScan("com.jalindi")
 public class ForecApplication implements CommandLineRunner {
 	private static final Logger log = LoggerFactory.getLogger(ForecApplication.class);
 

@@ -2,15 +2,16 @@ package com.jalindi.forec.datatype;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import com.jalindi.forec.FieldDefinition;
 import com.jalindi.forec.Value;
 
 public class IntegerValue extends GenericValue<Integer> {
-	public IntegerValue(String name, Value value) {
-		super(name, Integer.parseInt(value.getInternalValue()), value.getDisplayValue());
+	public IntegerValue(FieldDefinition defintion, Value value) {
+		super(defintion, Integer.parseInt(value.getInternalValue()), value.getDisplayValue());
 	}
 
-	public IntegerValue(String name, Value value, Repeat repeat) {
-		super(name, Integer.parseInt(value.getInternalValue()), value.getDisplayValue(), repeat);
+	public IntegerValue(FieldDefinition defintion, Value value, Repeat repeat) {
+		super(defintion, Integer.parseInt(value.getInternalValue()), value.getDisplayValue(), repeat);
 	}
 
 	@Override

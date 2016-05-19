@@ -11,6 +11,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import com.jalindi.forec.FieldDefinition.DataType;
+import com.jalindi.forec.datatype.BooleanValue;
+import com.jalindi.forec.datatype.IntegerValue;
 import com.jalindi.forec.datatype.NumericValue;
 import com.jalindi.forec.datatype.StringValue;
 
@@ -42,22 +44,38 @@ public class ForecObject {
 					@SuppressWarnings("unchecked")
 					List<NumericValue> list = (List<NumericValue>) get(propertyName);
 					for (Value value : values) {
-						list.add(new NumericValue(propertyName, value, RepeatGenerator.sequence(list.size() + 1)));
+						list.add(new NumericValue(definition, value, RepeatGenerator.sequence(list.size() + 1)));
+					}
+				} else if (dataType.isBoolean()) {
+					@SuppressWarnings("unchecked")
+					List<BooleanValue> list = (List<BooleanValue>) get(propertyName);
+					for (Value value : values) {
+						list.add(new BooleanValue(definition, value, RepeatGenerator.sequence(list.size() + 1)));
+					}
+				} else if (dataType.isInteger()) {
+					@SuppressWarnings("unchecked")
+					List<IntegerValue> list = (List<IntegerValue>) get(propertyName);
+					for (Value value : values) {
+						list.add(new IntegerValue(definition, value, RepeatGenerator.sequence(list.size() + 1)));
 					}
 				} else {
 					@SuppressWarnings("unchecked")
 					List<StringValue> list = (List<StringValue>) get(propertyName);
 					for (Value value : values) {
-						list.add(new StringValue(propertyName, value, RepeatGenerator.sequence(list.size() + 1)));
+						list.add(new StringValue(definition, value, RepeatGenerator.sequence(list.size() + 1)));
 					}
 				}
 				return;
 			}
 			Value firstValue = values.get(0);
 			if (dataType.isNumeric()) {
-				descriptor.getWriteMethod().invoke(object, new NumericValue(propertyName, firstValue));
+				descriptor.getWriteMethod().invoke(object, new NumericValue(definition, firstValue));
+			} else if (dataType.isBoolean()) {
+				descriptor.getWriteMethod().invoke(object, new BooleanValue(definition, firstValue));
+			} else if (dataType.isInteger()) {
+				descriptor.getWriteMethod().invoke(object, new IntegerValue(definition, firstValue));
 			} else {
-				descriptor.getWriteMethod().invoke(object, new StringValue(propertyName, firstValue));
+				descriptor.getWriteMethod().invoke(object, new StringValue(definition, firstValue));
 			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| IntrospectionException e) {

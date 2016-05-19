@@ -11,10 +11,10 @@ import javax.xml.transform.stream.StreamResult;
 import com.jalindi.forec.FieldDefinition.DataType;
 
 @Resource
-@FieldDefinitions({ @FieldDefinition(name = "name", dataType = DataType.STRING),
-		@FieldDefinition(name = "age", dataType = DataType.NUMBER),
-		@FieldDefinition(name = "address", dataType = DataType.STRING),
-		@FieldDefinition(name = "citizenship", dataType = DataType.STRING, isList = true) })
+@FieldDefinitions({ @FieldDefinition(name = "name", container = "Contact", dataType = DataType.STRING),
+		@FieldDefinition(name = "age", container = "Contact", dataType = DataType.NUMBER),
+		@FieldDefinition(name = "address", container = "Contact", dataType = DataType.STRING),
+		@FieldDefinition(name = "citizenship", container = "Contact", dataType = DataType.STRING, isList = true) })
 public class ForecBuilder {
 	private AnswerSet answerSet = new AnswerSet();
 
